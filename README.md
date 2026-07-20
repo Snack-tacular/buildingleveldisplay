@@ -2,6 +2,11 @@
 
 This BepInEx mod displays the current and maximum level of player buildings directly in the game world, using a clean and stylized overlay card.
 
+## Previews
+
+![Preview 1](screenshots/preview1.png)
+![Preview 2](screenshots/preview2.png)
+
 ## Features
 
 - **Distance Culling (Hide When Far)**: Automatically hides the level display when the local player character is further than `22f` units away to keep the screen clean.
