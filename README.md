@@ -1,10 +1,9 @@
 # Sineus Arena - Building Level Display Mod
 
-This BepInEx mod displays the current and maximum level of player buildings directly in the game world, precisely aligned above the interaction buttons of each building, using a clean and stylized overlay card that matches the game's aesthetics.
+This BepInEx mod displays the current and maximum level of player buildings directly in the game world, using a clean and stylized overlay card.
 
 ## Features
 
-- **Overhead Alignment**: Placed directly above the building's interaction prompt bubble (`PlayerInteractable` position + `CostPanelOffset`).
 - **Distance Culling (Hide When Far)**: Automatically hides the level display when the local player character is further than `22f` units away to keep the screen clean.
 - **Z-Test Bypass (Render on Top)**: Overrides standard depth-testing so that the level badges render on top of the building's 3D models and never get occluded.
 - **Unparented Canvas (No Scale Distortion)**: Instantiated at the scene root without parenting it to the building itself to prevent non-uniform scaling or skewing from warping the badge size/shape.
@@ -22,5 +21,5 @@ This BepInEx mod displays the current and maximum level of player buildings dire
 2. Compile in **Release** configuration.
 3. Copy the compiled `BuildingLevelDisplay.dll` into the game's `BepInEx/plugins/` directory:
    ```
-   C:\Program Files (x86)\Steam\steamapps\common\Sineus Arena\BepInEx\plugins\BuildingLevelDisplay\BuildingLevelDisplay.dll
+   steamapps\common\Sineus Arena\BepInEx\plugins\BuildingLevelDisplay\BuildingLevelDisplay.dll
    ```
