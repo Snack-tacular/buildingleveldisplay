@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 namespace BuildingLevelDisplay
 {
-    [BepInPlugin("com.kp.buildingleveldisplay", "Building Level Display", "1.0.9")]
+    [BepInPlugin("com.kp.buildingleveldisplay", "Building Level Display", "1.1.0")]
     public class Plugin : BaseUnityPlugin
     {
         public static ManualLogSource? Log;
@@ -163,12 +163,22 @@ namespace BuildingLevelDisplay
                 GameObject textGo = new GameObject("LevelText");
                 textGo.transform.SetParent(canvasGo.transform, false);
                 _labelText = textGo.AddComponent<Text>();
-                _labelText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-                _labelText.fontSize = 15;
+                
+                Font? uiFont = Font.CreateDynamicFontFromOSFont("Arial", 28) ?? 
+                               Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+                _labelText.font = uiFont;
+                _labelText.fontSize = 22;
                 _labelText.fontStyle = FontStyle.Bold;
                 _labelText.alignment = TextAnchor.MiddleCenter;
                 _labelText.color = Color.white;
+                _labelText.horizontalOverflow = HorizontalWrapMode.Overflow;
+                _labelText.verticalOverflow = VerticalWrapMode.Overflow;
                 _labelText.text = "Lvl 1";
+
+                // Add drop shadow / outline for maximum contrast & crisp readability
+                Outline outline = textGo.AddComponent<Outline>();
+                outline.effectColor = new Color(0f, 0f, 0f, 0.95f);
+                outline.effectDistance = new Vector2(1.5f, -1.5f);
 
                 RectTransform textRT = textGo.GetComponent<RectTransform>();
                 textRT.anchorMin = new Vector2(0.5f, 0.5f);
