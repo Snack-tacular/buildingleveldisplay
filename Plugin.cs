@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 namespace BuildingLevelDisplay
 {
-    [BepInPlugin("com.kp.buildingleveldisplay", "Building Level Display", "1.0.0")]
+    [BepInPlugin("com.kp.buildingleveldisplay", "Building Level Display", "1.0.1")]
     public class Plugin : BaseUnityPlugin
     {
         public static ManualLogSource? Log;
@@ -173,15 +173,13 @@ namespace BuildingLevelDisplay
                 PlayerInteractable? interactable = GetInteractable();
                 if (interactable != null)
                 {
-                    // Position right above the interact button in world space
-                    Vector3 interactPos = interactable.transform.position + interactable.CostPanelOffset;
-                    _canvasRT.position = interactPos + new Vector3(0f, 1.3f, 0f); // Raised offset
+                    Vector3 localInteractPos = transform.InverseTransformPoint(interactable.transform.position + interactable.CostPanelOffset);
+                    _canvasRT.localPosition = localInteractPos + new Vector3(0f, 1.3f, 0f);
                 }
                 else
                 {
-                    // Fallback to mesh-based height (using world space)
                     float targetY = _cachedHeight + 0.3f;
-                    _canvasRT.position = transform.position + new Vector3(0f, targetY, 0f);
+                    _canvasRT.localPosition = new Vector3(0f, targetY, 0f);
                 }
 
                 // Face the camera (billboard effect)
@@ -200,8 +198,9 @@ namespace BuildingLevelDisplay
         {
             if (_uiInitialized) return;
 
-            // 1. Create Canvas GameObject (Not parented to avoid scale/skew distortion)
+            // 1. Create Canvas GameObject
             GameObject canvasGo = new GameObject("BuildingLevelCanvas");
+            canvasGo.transform.SetParent(transform, false);
 
             _canvas = canvasGo.AddComponent<Canvas>();
             _canvas.renderMode = RenderMode.WorldSpace;
@@ -209,8 +208,8 @@ namespace BuildingLevelDisplay
 
             _canvasRT = canvasGo.GetComponent<RectTransform>();
             _canvasRT.sizeDelta = new Vector2(90f, 40f);
-            _canvasRT.localScale = Vector3.one * 0.026f; // Absolute world-space scale
-            _canvasRT.position = transform.position + new Vector3(0f, 3f, 0f);
+            _canvasRT.localScale = Vector3.one * 0.026f; // Scale
+            _canvasRT.localPosition = new Vector3(0f, 3f, 0f);
 
             // 2. Create Border (Background)
             GameObject borderGo = new GameObject("Border");
@@ -251,6 +250,8 @@ namespace BuildingLevelDisplay
             textRT.anchorMin = new Vector2(0.5f, 0.5f);
             textRT.anchorMax = new Vector2(0.5f, 0.5f);
             textRT.pivot = new Vector2(0.5f, 0.5f);
+            textRT.sizeDelta = new Vector2(80f, 30f);
+            textRT.anchoredPosition = Vector2.zero;
 
             // Create materials that ignore depth testing (ZTest Always)
             try
