@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 namespace BuildingLevelDisplay
 {
-    [BepInPlugin("com.kp.buildingleveldisplay", "Building Level Display", "1.0.5")]
+    [BepInPlugin("com.kp.buildingleveldisplay", "Building Level Display", "1.0.6")]
     public class Plugin : BaseUnityPlugin
     {
         public static ManualLogSource? Log;
@@ -176,30 +176,8 @@ namespace BuildingLevelDisplay
                 textRT.sizeDelta = new Vector2(90f, 30f);
                 textRT.anchoredPosition = Vector2.zero;
 
-                // Create materials that ignore depth testing (ZTest Always = 8)
-                try
-                {
-                    Shader defaultUiShader = Shader.Find("UI/Default");
-                    if (defaultUiShader != null)
-                    {
-                        Material mat = new Material(defaultUiShader);
-                        mat.SetInt("_ZTest", (int)UnityEngine.Rendering.CompareFunction.Always);
-                        if (_borderImage != null) _borderImage.material = mat;
-                        if (_bgImage != null) _bgImage.material = mat;
-                    }
-
-                    Shader fontShader = Shader.Find("UI/Default Font") ?? Shader.Find("UI/Default");
-                    if (fontShader != null)
-                    {
-                        Material fontMat = new Material(fontShader);
-                        fontMat.SetInt("_ZTest", (int)UnityEngine.Rendering.CompareFunction.Always);
-                        if (_labelText != null) _labelText.material = fontMat;
-                    }
-                }
-                catch (Exception matEx)
-                {
-                    Plugin.Log?.LogWarning($"Error assigning ZTest material: {matEx.Message}");
-                }
+                // 5. Apply AlwaysOnTop materials
+                ApplyOverlayMaterials();
 
                 _uiInitialized = true;
                 UpdateLevelText();
@@ -207,6 +185,50 @@ namespace BuildingLevelDisplay
             catch (Exception ex)
             {
                 Plugin.Log?.LogError($"Failed to build UI for building: {ex}");
+            }
+        }
+
+        private static Material? _alwaysOnTopImageMaterial;
+        private static Material? _alwaysOnTopTextMaterial;
+
+        private void ApplyOverlayMaterials()
+        {
+            try
+            {
+                if (_alwaysOnTopImageMaterial == null)
+                {
+                    Shader defaultShader = Shader.Find("UI/Default") ?? Shader.Find("Hidden/Internal-GUITextureClip") ?? Shader.Find("Sprites/Default");
+                    if (defaultShader != null)
+                    {
+                        _alwaysOnTopImageMaterial = new Material(defaultShader);
+                        _alwaysOnTopImageMaterial.SetInt("_ZTest", (int)UnityEngine.Rendering.CompareFunction.Always);
+                        _alwaysOnTopImageMaterial.renderQueue = 4000;
+                    }
+                }
+
+                if (_alwaysOnTopTextMaterial == null)
+                {
+                    Shader fontShader = Shader.Find("UI/Default Font") ?? Shader.Find("UI/Default");
+                    if (fontShader != null)
+                    {
+                        _alwaysOnTopTextMaterial = new Material(fontShader);
+                        _alwaysOnTopTextMaterial.SetInt("_ZTest", (int)UnityEngine.Rendering.CompareFunction.Always);
+                        _alwaysOnTopTextMaterial.renderQueue = 4000;
+                    }
+                }
+
+                if (_borderImage != null && _alwaysOnTopImageMaterial != null)
+                    _borderImage.material = _alwaysOnTopImageMaterial;
+
+                if (_bgImage != null && _alwaysOnTopImageMaterial != null)
+                    _bgImage.material = _alwaysOnTopImageMaterial;
+
+                if (_labelText != null && _alwaysOnTopTextMaterial != null)
+                    _labelText.material = _alwaysOnTopTextMaterial;
+            }
+            catch (Exception ex)
+            {
+                Plugin.Log?.LogWarning($"Error applying overlay materials: {ex.Message}");
             }
         }
 
