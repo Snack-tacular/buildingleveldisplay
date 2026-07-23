@@ -42,14 +42,26 @@ namespace BuildingLevelDisplay
         [HarmonyPostfix]
         public static void OnNetworkSpawn_Postfix(PlayerBuilding __instance)
         {
-            if (__instance == null) return;
+            EnsureComponentAttached(__instance);
+        }
+
+        [HarmonyPatch(typeof(PlayerBuilding), "OnEnable")]
+        [HarmonyPostfix]
+        public static void OnEnable_Postfix(PlayerBuilding __instance)
+        {
+            EnsureComponentAttached(__instance);
+        }
+
+        private static void EnsureComponentAttached(PlayerBuilding building)
+        {
+            if (building == null) return;
 
             try
             {
-                if (__instance.gameObject.GetComponent<BuildingLevelDisplayComponent>() == null)
+                if (building.gameObject.GetComponent<BuildingLevelDisplayComponent>() == null)
                 {
-                    __instance.gameObject.AddComponent<BuildingLevelDisplayComponent>();
-                    Plugin.Log?.LogInfo($"Attached BuildingLevelDisplayComponent to building of type {__instance.HouseType}");
+                    building.gameObject.AddComponent<BuildingLevelDisplayComponent>();
+                    Plugin.Log?.LogInfo($"Attached BuildingLevelDisplayComponent to building of type {building.HouseType}");
                 }
             }
             catch (Exception ex)
@@ -104,15 +116,16 @@ namespace BuildingLevelDisplay
             
             if (shouldShow)
             {
-                bool inRange = true;
+                bool inRange = false;
                 PlayerInteract? player = GetLocalPlayer();
                 if (player != null)
                 {
-                    inRange = Vector3.Distance(player.transform.position, transform.position) < 22f;
+                    inRange = Vector3.Distance(player.transform.position, transform.position) < 45f;
                 }
-                else if (_cam != null)
+                
+                if (!inRange && _cam != null)
                 {
-                    inRange = Vector3.Distance(_cam.transform.position, transform.position) < 35f;
+                    inRange = Vector3.Distance(_cam.transform.position, transform.position) < 55f;
                 }
                 shouldShow = inRange;
             }
