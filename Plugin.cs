@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 namespace BuildingLevelDisplay
 {
-    [BepInPlugin("com.kp.buildingleveldisplay", "Building Level Display", "1.0.6")]
+    [BepInPlugin("com.kp.buildingleveldisplay", "Building Level Display", "1.0.7")]
     public class Plugin : BaseUnityPlugin
     {
         public static ManualLogSource? Log;
@@ -127,7 +127,8 @@ namespace BuildingLevelDisplay
 
                 _canvas = canvasGo.AddComponent<Canvas>();
                 _canvas.renderMode = RenderMode.WorldSpace;
-                _canvas.sortingOrder = 250;
+                _canvas.overrideSorting = true;
+                _canvas.sortingOrder = 30000; // Top overlay sorting order
 
                 _canvasRT = canvasGo.GetComponent<RectTransform>();
                 _canvasRT.sizeDelta = new Vector2(100f, 40f);
