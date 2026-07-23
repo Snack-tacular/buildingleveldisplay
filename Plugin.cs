@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 namespace BuildingLevelDisplay
 {
-    [BepInPlugin("com.kp.buildingleveldisplay", "Building Level Display", "1.0.2")]
+    [BepInPlugin("com.kp.buildingleveldisplay", "Building Level Display", "1.0.3")]
     public class Plugin : BaseUnityPlugin
     {
         public static ManualLogSource? Log;
@@ -45,13 +45,6 @@ namespace BuildingLevelDisplay
             EnsureComponentAttached(__instance);
         }
 
-        [HarmonyPatch(typeof(PlayerBuilding), "OnEnable")]
-        [HarmonyPostfix]
-        public static void OnEnable_Postfix(PlayerBuilding __instance)
-        {
-            EnsureComponentAttached(__instance);
-        }
-
         [HarmonyPatch(typeof(BuildingSpot), "OnEnable")]
         [HarmonyPostfix]
         public static void BuildingSpot_OnEnable_Postfix(BuildingSpot __instance)
@@ -62,7 +55,7 @@ namespace BuildingLevelDisplay
             }
         }
 
-        [HarmonyPatch(typeof(BuildingSpot), "Build")]
+        [HarmonyPatch(typeof(BuildingSpot), "Build", new Type[0])]
         [HarmonyPostfix]
         public static void BuildingSpot_Build_Postfix(BuildingSpot __instance)
         {
