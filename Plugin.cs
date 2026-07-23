@@ -105,31 +105,9 @@ namespace BuildingLevelDisplay
                 if (_building == null) return;
             }
 
-            if (_levelModule == null)
-            {
-                _levelModule = _building.LevelModule;
-                if (_levelModule == null) return;
-            }
-
             // Only show UI if the house type is built and not None
             bool shouldShow = _building.HouseType != HouseType.None && _building.gameObject.activeInHierarchy;
             
-            if (shouldShow)
-            {
-                bool inRange = false;
-                PlayerInteract? player = GetLocalPlayer();
-                if (player != null)
-                {
-                    inRange = Vector3.Distance(player.transform.position, transform.position) < 45f;
-                }
-                
-                if (!inRange && _cam != null)
-                {
-                    inRange = Vector3.Distance(_cam.transform.position, transform.position) < 55f;
-                }
-                shouldShow = inRange;
-            }
-
             if (!shouldShow)
             {
                 if (_canvas != null && _canvas.gameObject.activeSelf)
@@ -280,11 +258,23 @@ namespace BuildingLevelDisplay
 
         private void UpdateLevelText()
         {
-            if (_labelText == null || _levelModule == null) return;
+            if (_labelText == null) return;
 
-            int level = _levelModule.Level;
-            int maxLevel = _levelModule.MaxLevel;
-            bool isMax = _levelModule.IsMaxLevel || (maxLevel > 0 && level >= maxLevel);
+            int level = 1;
+            int maxLevel = 0;
+            bool isMax = false;
+
+            if (_levelModule == null && _building != null)
+            {
+                _levelModule = _building.LevelModule;
+            }
+
+            if (_levelModule != null)
+            {
+                level = _levelModule.Level;
+                maxLevel = _levelModule.MaxLevel;
+                isMax = _levelModule.IsMaxLevel || (maxLevel > 0 && level >= maxLevel);
+            }
 
             if (maxLevel > 0)
             {
