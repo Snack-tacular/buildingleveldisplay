@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 namespace BuildingLevelDisplay
 {
-    [BepInPlugin("com.kp.buildingleveldisplay", "Building Level Display", "1.0.8")]
+    [BepInPlugin("com.kp.buildingleveldisplay", "Building Level Display", "1.0.9")]
     public class Plugin : BaseUnityPlugin
     {
         public static ManualLogSource? Log;
@@ -243,9 +243,35 @@ namespace BuildingLevelDisplay
                 if (_building == null) return;
             }
 
+            // Distance check to hide UI when far away
+            bool inRange = false;
+            PlayerInteract? player = GetLocalPlayer();
+            if (player != null)
+            {
+                inRange = Vector3.Distance(player.transform.position, transform.position) < 22f;
+            }
+            else if (_cam != null)
+            {
+                inRange = Vector3.Distance(_cam.transform.position, transform.position) < 35f;
+            }
+
+            if (!inRange)
+            {
+                if (_canvas != null && _canvas.gameObject.activeSelf)
+                {
+                    _canvas.gameObject.SetActive(false);
+                }
+                return;
+            }
+
             if (!_uiInitialized)
             {
                 BuildUI();
+            }
+
+            if (_canvas != null && !_canvas.gameObject.activeSelf)
+            {
+                _canvas.gameObject.SetActive(true);
             }
 
             if (_levelModule == null)
@@ -393,6 +419,20 @@ namespace BuildingLevelDisplay
             }
 
             return null;
+        }
+
+        private PlayerInteract? _localPlayer;
+        private float _lastPlayerCheckTime = -99f;
+
+        private PlayerInteract? GetLocalPlayer()
+        {
+            if (_localPlayer != null && _localPlayer.gameObject != null) return _localPlayer;
+            if (Time.time - _lastPlayerCheckTime > 2.0f)
+            {
+                _lastPlayerCheckTime = Time.time;
+                _localPlayer = FindObjectOfType<PlayerInteract>();
+            }
+            return _localPlayer;
         }
 
         private void OnDestroy()
