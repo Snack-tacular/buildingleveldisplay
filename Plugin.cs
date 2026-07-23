@@ -52,6 +52,26 @@ namespace BuildingLevelDisplay
             EnsureComponentAttached(__instance);
         }
 
+        [HarmonyPatch(typeof(BuildingSpot), "OnEnable")]
+        [HarmonyPostfix]
+        public static void BuildingSpot_OnEnable_Postfix(BuildingSpot __instance)
+        {
+            if (__instance != null && __instance.PlayerBuilding != null)
+            {
+                EnsureComponentAttached(__instance.PlayerBuilding);
+            }
+        }
+
+        [HarmonyPatch(typeof(BuildingSpot), "Build")]
+        [HarmonyPostfix]
+        public static void BuildingSpot_Build_Postfix(BuildingSpot __instance)
+        {
+            if (__instance != null && __instance.PlayerBuilding != null)
+            {
+                EnsureComponentAttached(__instance.PlayerBuilding);
+            }
+        }
+
         private static void EnsureComponentAttached(PlayerBuilding building)
         {
             if (building == null) return;
@@ -105,8 +125,8 @@ namespace BuildingLevelDisplay
                 if (_building == null) return;
             }
 
-            // Only show UI if the house type is built and not None
-            bool shouldShow = _building.HouseType != HouseType.None && _building.gameObject.activeInHierarchy;
+            // Show UI whenever building object is active
+            bool shouldShow = _building.gameObject.activeInHierarchy;
             
             if (!shouldShow)
             {
@@ -128,11 +148,12 @@ namespace BuildingLevelDisplay
                 _canvas.gameObject.SetActive(true);
             }
 
+            int currentLevel = _levelModule != null ? _levelModule.Level : 1;
             // Handle house type or level changes to recalculate the height bounds and level text
-            if (_building.HouseType != _lastHouseType || _levelModule.Level != _lastLevel)
+            if (_building.HouseType != _lastHouseType || currentLevel != _lastLevel)
             {
                 _lastHouseType = _building.HouseType;
-                _lastLevel = _levelModule.Level;
+                _lastLevel = currentLevel;
                 
                 _cachedHeight = CalculateBuildingHeight();
                 _recalculateHeightFrames = 15; // recalculate over next 15 frames to let visual transition complete
