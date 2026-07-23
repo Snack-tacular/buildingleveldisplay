@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 namespace BuildingLevelDisplay
 {
-    [BepInPlugin("com.kp.buildingleveldisplay", "Building Level Display", "1.0.4")]
+    [BepInPlugin("com.kp.buildingleveldisplay", "Building Level Display", "1.0.5")]
     public class Plugin : BaseUnityPlugin
     {
         public static ManualLogSource? Log;
@@ -176,6 +176,31 @@ namespace BuildingLevelDisplay
                 textRT.sizeDelta = new Vector2(90f, 30f);
                 textRT.anchoredPosition = Vector2.zero;
 
+                // Create materials that ignore depth testing (ZTest Always = 8)
+                try
+                {
+                    Shader defaultUiShader = Shader.Find("UI/Default");
+                    if (defaultUiShader != null)
+                    {
+                        Material mat = new Material(defaultUiShader);
+                        mat.SetInt("_ZTest", (int)UnityEngine.Rendering.CompareFunction.Always);
+                        if (_borderImage != null) _borderImage.material = mat;
+                        if (_bgImage != null) _bgImage.material = mat;
+                    }
+
+                    Shader fontShader = Shader.Find("UI/Default Font") ?? Shader.Find("UI/Default");
+                    if (fontShader != null)
+                    {
+                        Material fontMat = new Material(fontShader);
+                        fontMat.SetInt("_ZTest", (int)UnityEngine.Rendering.CompareFunction.Always);
+                        if (_labelText != null) _labelText.material = fontMat;
+                    }
+                }
+                catch (Exception matEx)
+                {
+                    Plugin.Log?.LogWarning($"Error assigning ZTest material: {matEx.Message}");
+                }
+
                 _uiInitialized = true;
                 UpdateLevelText();
             }
@@ -221,11 +246,11 @@ namespace BuildingLevelDisplay
                 {
                     Vector3 worldInteractPos = interactable.transform.position + interactable.CostPanelOffset;
                     Vector3 localPos = transform.InverseTransformPoint(worldInteractPos);
-                    _canvasRT.localPosition = localPos + new Vector3(0f, 3.2f, 0f);
+                    _canvasRT.localPosition = localPos + new Vector3(0f, 1.3f, 0f);
                 }
                 else
                 {
-                    _canvasRT.localPosition = new Vector3(0f, _cachedHeight + 1.8f, 0f);
+                    _canvasRT.localPosition = new Vector3(0f, _cachedHeight + 0.3f, 0f);
                 }
 
                 if (_cam == null || !_cam.gameObject.activeInHierarchy)
