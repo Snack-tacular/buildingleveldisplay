@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 namespace BuildingLevelDisplay
 {
-    [BepInPlugin("com.kp.buildingleveldisplay", "Building Level Display", "1.0.7")]
+    [BepInPlugin("com.kp.buildingleveldisplay", "Building Level Display", "1.0.8")]
     public class Plugin : BaseUnityPlugin
     {
         public static ManualLogSource? Log;
@@ -198,12 +198,13 @@ namespace BuildingLevelDisplay
             {
                 if (_alwaysOnTopImageMaterial == null)
                 {
-                    Shader defaultShader = Shader.Find("UI/Default") ?? Shader.Find("Hidden/Internal-GUITextureClip") ?? Shader.Find("Sprites/Default");
+                    Shader defaultShader = Shader.Find("UI/Default") ?? Shader.Find("Sprites/Default");
                     if (defaultShader != null)
                     {
                         _alwaysOnTopImageMaterial = new Material(defaultShader);
                         _alwaysOnTopImageMaterial.SetInt("_ZTest", (int)UnityEngine.Rendering.CompareFunction.Always);
-                        _alwaysOnTopImageMaterial.renderQueue = 4000;
+                        _alwaysOnTopImageMaterial.SetInt("unity_GUIZTestMode", (int)UnityEngine.Rendering.CompareFunction.Always);
+                        _alwaysOnTopImageMaterial.renderQueue = 5000;
                     }
                 }
 
@@ -214,7 +215,8 @@ namespace BuildingLevelDisplay
                     {
                         _alwaysOnTopTextMaterial = new Material(fontShader);
                         _alwaysOnTopTextMaterial.SetInt("_ZTest", (int)UnityEngine.Rendering.CompareFunction.Always);
-                        _alwaysOnTopTextMaterial.renderQueue = 4000;
+                        _alwaysOnTopTextMaterial.SetInt("unity_GUIZTestMode", (int)UnityEngine.Rendering.CompareFunction.Always);
+                        _alwaysOnTopTextMaterial.renderQueue = 5000;
                     }
                 }
 
