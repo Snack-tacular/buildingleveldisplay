@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 namespace BuildingLevelDisplay
 {
-    [BepInPlugin("com.kp.buildingleveldisplay", "Building Level Display", "1.1.0")]
+    [BepInPlugin("com.kp.buildingleveldisplay", "Building Level Display", "1.1.1")]
     public class Plugin : BaseUnityPlugin
     {
         public static ManualLogSource? Log;
@@ -258,11 +258,11 @@ namespace BuildingLevelDisplay
             PlayerInteract? player = GetLocalPlayer();
             if (player != null)
             {
-                inRange = Vector3.Distance(player.transform.position, transform.position) < 22f;
+                inRange = Vector3.Distance(player.transform.position, transform.position) < 32f;
             }
             else if (_cam != null)
             {
-                inRange = Vector3.Distance(_cam.transform.position, transform.position) < 35f;
+                inRange = Vector3.Distance(_cam.transform.position, transform.position) < 45f;
             }
 
             if (!inRange)
