@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 namespace BuildingLevelDisplay
 {
-    [BepInPlugin("com.kp.buildingleveldisplay", "Building Level Display", "1.0.3")]
+    [BepInPlugin("com.kp.buildingleveldisplay", "Building Level Display", "1.0.4")]
     public class Plugin : BaseUnityPlugin
     {
         public static ManualLogSource? Log;
@@ -221,11 +221,11 @@ namespace BuildingLevelDisplay
                 {
                     Vector3 worldInteractPos = interactable.transform.position + interactable.CostPanelOffset;
                     Vector3 localPos = transform.InverseTransformPoint(worldInteractPos);
-                    _canvasRT.localPosition = localPos + new Vector3(0f, 1.2f, 0f);
+                    _canvasRT.localPosition = localPos + new Vector3(0f, 3.2f, 0f);
                 }
                 else
                 {
-                    _canvasRT.localPosition = new Vector3(0f, _cachedHeight + 0.3f, 0f);
+                    _canvasRT.localPosition = new Vector3(0f, _cachedHeight + 1.8f, 0f);
                 }
 
                 if (_cam == null || !_cam.gameObject.activeInHierarchy)
