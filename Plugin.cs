@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 namespace BuildingLevelDisplay
 {
-    [BepInPlugin("com.kp.buildingleveldisplay", "Building Level Display", "1.1.2")]
+    [BepInPlugin("com.kp.buildingleveldisplay", "Building Level Display", "1.1.3")]
     public class Plugin : BaseUnityPlugin
     {
         public static ManualLogSource? Log;
@@ -431,20 +431,20 @@ namespace BuildingLevelDisplay
             return null;
         }
 
-        private PlayerInteract? _localPlayer;
-        private float _lastPlayerCheckTime = -99f;
+        private static PlayerInteract? _staticLocalPlayer;
+        private static float _staticLastPlayerCheckTime = -99f;
 
         private PlayerInteract? GetLocalPlayer()
         {
-            if (_localPlayer != null && _localPlayer.gameObject != null && _localPlayer.gameObject.activeInHierarchy)
+            if (_staticLocalPlayer != null && _staticLocalPlayer.gameObject != null && _staticLocalPlayer.gameObject.activeInHierarchy)
             {
-                return _localPlayer;
+                return _staticLocalPlayer;
             }
 
-            if (Time.time - _lastPlayerCheckTime > 1.0f)
+            if (Time.time - _staticLastPlayerCheckTime > 2.0f)
             {
-                _lastPlayerCheckTime = Time.time;
-                _localPlayer = null;
+                _staticLastPlayerCheckTime = Time.time;
+                _staticLocalPlayer = null;
 
                 PlayerInteract[] players = FindObjectsOfType<PlayerInteract>();
                 if (players != null && players.Length > 0)
@@ -455,20 +455,20 @@ namespace BuildingLevelDisplay
                         {
                             if (p.IsOwner)
                             {
-                                _localPlayer = p;
+                                _staticLocalPlayer = p;
                                 break;
                             }
                         }
                     }
 
-                    if (_localPlayer == null && players[0] != null && players[0].gameObject.activeInHierarchy)
+                    if (_staticLocalPlayer == null && players[0] != null && players[0].gameObject.activeInHierarchy)
                     {
-                        _localPlayer = players[0];
+                        _staticLocalPlayer = players[0];
                     }
                 }
             }
 
-            return _localPlayer;
+            return _staticLocalPlayer;
         }
 
         private void OnDestroy()
