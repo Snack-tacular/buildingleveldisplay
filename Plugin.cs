@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 namespace BuildingLevelDisplay
 {
-    [BepInPlugin("com.kp.buildingleveldisplay", "Building Level Display", "1.1.1")]
+    [BepInPlugin("com.kp.buildingleveldisplay", "Building Level Display", "1.1.2")]
     public class Plugin : BaseUnityPlugin
     {
         public static ManualLogSource? Log;
@@ -436,12 +436,38 @@ namespace BuildingLevelDisplay
 
         private PlayerInteract? GetLocalPlayer()
         {
-            if (_localPlayer != null && _localPlayer.gameObject != null) return _localPlayer;
-            if (Time.time - _lastPlayerCheckTime > 2.0f)
+            if (_localPlayer != null && _localPlayer.gameObject != null && _localPlayer.gameObject.activeInHierarchy)
+            {
+                return _localPlayer;
+            }
+
+            if (Time.time - _lastPlayerCheckTime > 1.0f)
             {
                 _lastPlayerCheckTime = Time.time;
-                _localPlayer = FindObjectOfType<PlayerInteract>();
+                _localPlayer = null;
+
+                PlayerInteract[] players = FindObjectsOfType<PlayerInteract>();
+                if (players != null && players.Length > 0)
+                {
+                    foreach (PlayerInteract p in players)
+                    {
+                        if (p != null && p.gameObject != null && p.gameObject.activeInHierarchy)
+                        {
+                            if (p.IsOwner)
+                            {
+                                _localPlayer = p;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (_localPlayer == null && players[0] != null && players[0].gameObject.activeInHierarchy)
+                    {
+                        _localPlayer = players[0];
+                    }
+                }
             }
+
             return _localPlayer;
         }
 
